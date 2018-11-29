@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DTD-->
+<!DOCTYPE Jugadores [
+<!ELEMENT Jugadores (Jugador+)>
+	<!ELEMENT Jugador (nombre+, horas_jugadas+, nivel+, puntuacion+)>
+	<!ATTLIST Jugador
+	nacionalidad (ES | US | CO | IT | FR | AL) #REQUIRED>
+	<!ELEMENT nombre (#PCDATA)>
+	<!ELEMENT horas_jugadas (#PCDATA)>
+	<!ELEMENT nivel (#PCDATA)>
+	<!ELEMENT puntuacion (#PCDATA)>
+]>
+
+<Jugadores>
+	<Jugador nacionalidad="ES">
+		<nombre>zeta89</nombre>
+		<horas_jugadas>22</horas_jugadas>
+		<nivel>5</nivel>
+		<puntuacion>50</puntuacion>	
+	</Jugador>
+	<Jugador nacionalidad="US">
+		<nombre>crocodile_fire</nombre>
+		<horas_jugadas>12</horas_jugadas>
+		<nivel>14</nivel>
+		<puntuacion>140</puntuacion>	
+	</Jugador>
+	<Jugador nacionalidad="CO">
+		<nombre>donChepe</nombre>
+		<horas_jugadas>11</horas_jugadas>
+		<nivel>20</nivel>
+		<puntuacion>200</puntuacion>	
+	</Jugador>
+	<Jugador nacionalidad="IT">
+		<nombre>CappiDiTuttoCappi</nombre>
+		<horas_jugadas>4</horas_jugadas>
+		<nivel>13</nivel>
+		<puntuacion>130</puntuacion>	
+	</Jugador>
+	<Jugador nacionalidad="US">
+		<nombre>Xalerox</nombre>
+		<horas_jugadas>34</horas_jugadas>
+		<nivel>22</nivel>
+		<puntuacion>220</puntuacion>	
+	</Jugador>
+	<Jugador nacionalidad="ES">
+		<nombre>davidRT</nombre>
+		<horas_jugadas>10</horas_jugadas>
+		<nivel>100</nivel>
+		<puntuacion>1000</puntuacion>	
+	</Jugador>	
+</Jugadores>
