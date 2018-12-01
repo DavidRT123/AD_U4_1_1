@@ -83,6 +83,7 @@ public class AD_U4_1_1 {
     }
 
     /**
+     * Todopoderoso método main que crea una nueva instancia de esta misma clase
      * @param args the command line arguments
      */
     public static void main(String[] args) {
@@ -184,6 +185,10 @@ public class AD_U4_1_1 {
         }
     }
 
+    /**
+     * Método para cargar un fichero xml existente o crear directamente uno nuevo introduciendo
+     * el código a lo bestia 
+     */
     public void punto7() {
         try {
             String respuesta;
@@ -203,10 +208,6 @@ public class AD_U4_1_1 {
         } catch (IOException ex) {
             Logger.getLogger(AD_U4_1_1.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    public void guardarCambios() {
-
     }
 
     /**
