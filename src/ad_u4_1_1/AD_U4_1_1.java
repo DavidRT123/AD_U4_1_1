@@ -9,7 +9,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,28 +24,25 @@ import org.xml.sax.SAXException;
  * @author mdfda
  */
 public class AD_U4_1_1 {
+
     //Ruta absoluta donde se encuentra el archivo xml
     private final String RUTA = "C:\\Users\\mdfda\\Documents\\NetBeansProjects\\AD_U4_1_1\\src\\ad_u4_1_1\\documento\\";
-    private ArrayList<Jugador> listaJugadores;
+    private NodeList jugadores;
     private Document documento;
     private Scanner sc;
 
     public AD_U4_1_1() {
         int opcion;
-        boolean cambios = false;
         sc = new Scanner(System.in);
-        listaJugadores = new ArrayList<Jugador>();
 
         DocumentBuilderFactory factoria = DocumentBuilderFactory.newInstance();
 
         try {
-            //
             punto7();
 
             DocumentBuilder builder = factoria.newDocumentBuilder();
             documento = builder.parse(new File(RUTA + "Jugadores.xml"));
-            //A partir del documento xml convertir los nodos en objetos de Jugador y guardarlos en listaJugadores
-            rellenarJugadores();
+            jugadores = documento.getElementsByTagName("Jugador");
             do {
                 System.out.println("\nSelecciona opción (número): ");
                 System.out.println("1. Obtener estadísticas de los jugadores");
@@ -74,9 +70,6 @@ public class AD_U4_1_1 {
                         break;
                     case 0:
                         System.out.println("\nBYE, BYE");
-                        if (cambios) {
-                            guardarCambios();
-                        }
                         break;
                     default:
                         System.err.println("Tu elección esta equivocada. Vuelvela a hacer pero bien");
@@ -97,56 +90,70 @@ public class AD_U4_1_1 {
     }
 
     /**
-     * Función para visualizar las estadísticas de cada jugador
+     * Método para visualizar las estadísticas de cada jugador
      */
     public void punto2() {
         int i;
-        for (i = 0; i < listaJugadores.size(); i++) {
+        for (i = 0; i < jugadores.getLength(); i++) {
             System.out.println("************************************");
             System.out.println("***** CODIGO JUGADOR: " + i + " *****");
-            listarJugador(listaJugadores.get(i));
-            System.out.println("************************************");
+            listarJugador(i);
+            System.out.println("************************************\n");
         }
     }
 
     /**
-     * Función para cambiar el nivel de un determinado jugador (se cambia de
+     * Método para cambiar el nivel de un determinado jugador (se cambia de
      * nivel sumando uno al nivel actual)
      */
     public void punto3() {
-        int jugador;
+        int jugador, nivel;
         //Llamo para listar los jugadores y que elija el que quiera
         jugador = seleccionarJugador();
-        //Obtengo el valor antiguo y le sumo uno
-        listaJugadores.get(jugador).setNivel(listaJugadores.get(jugador).getNivel() + 1);
-        System.out.println("El jugador " + listaJugadores.get(jugador).getNombre() + " ha subido 1 nivel\n");
+        nivel = Integer.parseInt(getNivel(jugador));
+        //Le sumo 1 y lo seteo de nuevo
+        nivel++;
+        setNivel(jugador, String.valueOf(nivel));
+        System.out.println("El jugador " + getNombre(jugador) + " ha subido 1 nivel (Nivel: "+ getNivel(jugador) +")\n");
     }
 
     /**
-     * Función para sumar la puntuación obtenida (dato obtenido desde teclado) a
+     * Método para sumar la puntuación obtenida (dato obtenido desde teclado) a
      * su acumulado.
      */
     public void punto4() {
         int jugador, puntuacion = 0;
         //Llamo para listar los jugadores y que elija el que quiera
         jugador = seleccionarJugador();
-        System.out.println("Introduce la puntuación que le quieres sumar al jugador " + listaJugadores.get(jugador).getNombre());
+        System.out.println("Introduce la puntuación que le quieres sumar al jugador " + getNombre(jugador));
         puntuacion = sc.nextInt();
-        
+
         //Obtengo el valor antiguo y le sumo la puntuación introducida
-        listaJugadores.get(jugador).setPuntuacion(listaJugadores.get(jugador).getPuntuacion() + puntuacion);
-        System.out.println("El jugador " + listaJugadores.get(jugador).getNombre() + " ha aumentado su puntuación hasta " + listaJugadores.get(jugador).getPuntuacion() + "\n");
+        puntuacion += Integer.parseInt(getPuntuacion(jugador));
+        
+        //Setear nueva puntuación 
+        setPuntuacion(jugador, String.valueOf(puntuacion));
+        
+        System.out.println("El jugador " + getNombre(jugador) + " ha aumentado su puntuación hasta " + getPuntuacion(jugador) + "\n");
     }
 
+    /**
+     * Método para eliminar un determinado jugador
+     */
     public void punto5() {
         int jugador;
         System.out.println("Selecciona el jugador que quieres eliminiar: ");
         jugador = seleccionarJugador();
         System.out.println("\nEl siguiente jugador ha sido eliminado: ");
-        listarJugador(listaJugadores.get(jugador));
-        listaJugadores.remove(jugador);
+        listarJugador(jugador);
+        //Elimino el nodo del documento (.getDocumentElement() = obtener nodo raiz)
+        documento.getDocumentElement().removeChild(jugadores.item(jugador));
     }
 
+    /**
+     * Método que combina los puntos 3 y 4 y que permite sumar cualquier cantidad a un determinado 
+     * campo numérico de un determinado jugador
+     */    
     public void punto6() {
         int jugador, horas = 0, seleccion = 1;
         jugador = seleccionarJugador();
@@ -159,7 +166,7 @@ public class AD_U4_1_1 {
             System.err.println("Elige entre 1 y 3: ");
             seleccion = sc.nextInt();
         }
-        
+
         switch (seleccion) {
             case 1:
                 punto4();
@@ -168,11 +175,11 @@ public class AD_U4_1_1 {
                 punto3();
                 break;
             case 3:
-                System.out.println("Introduce las horas que le quieres sumar al jugador " + listaJugadores.get(jugador).getNombre());
+                System.out.println("Introduce las horas que le quieres sumar al jugador " + getNombre(jugador));
                 horas = sc.nextInt();
-                //Obtengo el valor antiguo y le sumo la puntuación introducida
-                listaJugadores.get(jugador).setHoras(listaJugadores.get(jugador).getHoras() + horas);
-                System.out.println("El jugador " + listaJugadores.get(jugador).getNombre() + " ha aumentado su horas hasta " + listaJugadores.get(jugador).getHoras() + "\n");
+                //Obtengo el valor antiguo y le sumo la puntuación introducida, después lo parseo a String
+                setHoras(jugador, String.valueOf(Integer.parseInt(getHoras(jugador)) + horas));
+                System.out.println("El jugador " + getNombre(jugador) + " ha aumentado su horas hasta " + getHoras(jugador) + "\n");
                 break;
         }
     }
@@ -189,7 +196,7 @@ public class AD_U4_1_1 {
                 System.out.println("Introduce el código del archivo xml (a lo bestia y sin errores, ¿eh? que nos conocemos :)");
                 respuesta = sc.nextLine();
                 //Creación a lo bestia de un nuevo xml
-                 BufferedWriter bW = new BufferedWriter(new FileWriter(RUTA + "Jugadores.xml"));
+                BufferedWriter bW = new BufferedWriter(new FileWriter(RUTA + "Jugadores.xml"));
                 bW.write(respuesta);
                 bW.close();
             }
@@ -202,55 +209,128 @@ public class AD_U4_1_1 {
 
     }
 
-    public void rellenarJugadores() {
-        int i, j;
-        Jugador jugador;
-        NodeList jugadores = documento.getElementsByTagName("Jugador"), propiedades;
+    /**
+     * Método para transformar los nombres de los nodos de cada jugador 
+     * en una cadena más elegante visualmente hablando
+     * Una pijada en toda regla
+     * @param jugador 
+     */
+    public void listarJugador(int jugador) {
+        //Acceder al nodo jugador, despues a sus atributos, después al atributo nacionalidad y después obtener el contenido de este
+        System.out.println("Nacionalidad: " + getNacionalidad(jugador));
+        System.out.println("Nombre: " + getNombre(jugador));
+        System.out.println("Horas: " + getHoras(jugador));
+        System.out.println("Nivel: " + getNivel(jugador));
+        System.out.println("Puntuación: " + getPuntuacion(jugador));
 
-        for (i = 0; i < jugadores.getLength(); i++) {
-            propiedades = jugadores.item(i).getChildNodes();
-            jugador = new Jugador();
-            //Bucle para recorrer los hijos del nodo jugador y setear las propiedades del objeto jugador
-            for (j = 0; j < propiedades.getLength(); j++) {
-                switch (propiedades.item(j).getNodeName()) {
-                    case "nombre":
-                        jugador.setNombre(propiedades.item(j).getTextContent());
-                        break;
-                    case "horas_jugadas":
-                        jugador.setHoras(Integer.parseInt(propiedades.item(j).getTextContent()));
-                        break;
-                    case "nivel":
-                        jugador.setNivel(Integer.parseInt(propiedades.item(j).getTextContent()));
-                        break;
-                    case "puntuacion":
-                        jugador.setPuntuacion(Integer.parseInt(propiedades.item(j).getTextContent()));
-                        break;
-                }
-            }
-            //Accedo a los atributos del jugador, en concreto a la nacionalidad, y la seteo
-            jugador.setNacionalidad(jugadores.item(i).getAttributes().getNamedItem("nacionalidad").getTextContent());
-            listaJugadores.add(jugador);
-        }
     }
 
-    public void listarJugador(Jugador jugador) {
-        System.out.println("Nombre: " + jugador.getNombre());
-        System.out.println("Nacionalidad: " + jugador.getNacionalidad());
-        System.out.println("Puntuación: " + jugador.getPuntuacion());
-        System.out.println("Nivel: " + jugador.getNivel());
-        System.out.println("Horas: " + jugador.getHoras() + "\n");
-    }
-
+    /**
+     * Método que, dado un valor introducido por teclado, se encarga de que este 
+     * dentro del rango de jugadores y devuelve la selección
+     * @return 
+     */
     private int seleccionarJugador() {
+        //Lista los jugadores junto con sus datos y un código para seleccionarlos
         punto2();
         int jugador = 0;
         System.out.println("Selecciona un jugador (nº CÓDIGO JUGADOR): ");
         jugador = sc.nextInt();
-        while (jugador > listaJugadores.size() || jugador < 0) {
-            System.err.println("Selecciona un jugador válido (entre 0 y " + listaJugadores.size());
+        while (jugador > jugadores.getLength() || jugador < 0) {
+            System.err.println("Selecciona un jugador válido (entre 0 y " + jugadores.getLength());
             jugador = sc.nextInt();
         }
-        
+
         return jugador;
+    }
+    
+    /**
+     * Método para abreviarse el tocho de código y obtener el nombre de manera sencilla
+     * @param jugador
+     * @return 
+     */
+    private String getNombre(int jugador){
+        return jugadores.item(jugador).getChildNodes().item(0).getTextContent();
+    }
+    
+    /**
+     * Método para abreviarse el tocho de código y obtener las horas de manera sencilla
+     * @param jugador
+     * @return 
+     */
+    private String getHoras(int jugador){
+        return jugadores.item(jugador).getChildNodes().item(1).getTextContent();
+    }
+    
+    /**
+     * Método para abreviarse el tocho de código y obtener el nivel de manera sencilla
+     * @param jugador
+     * @return 
+     */
+    private String getNivel(int jugador){
+        return jugadores.item(jugador).getChildNodes().item(2).getTextContent();
+    }
+    
+    /**
+     * Método para abreviarse el tocho de código y obtener la puntuacion de manera sencilla
+     * @param jugador
+     * @return 
+     */
+    private String getPuntuacion(int jugador){
+        return jugadores.item(jugador).getChildNodes().item(3).getTextContent();
+    }
+    
+    /**
+     * Método para abreviarse el tocho de código y obtener la nacionalidad de manera sencilla
+     * @param jugador
+     * @return 
+     */
+    private String getNacionalidad(int jugador){
+        return jugadores.item(jugador).getAttributes().item(0).getTextContent();
+    }
+    
+    /**
+     * Método para abreviarse el tocho de código y setear el nombre de manera sencilla
+     * @param jugador
+     * @param nombre
+     */
+    private void setNombre(int jugador, String nombre){
+        jugadores.item(jugador).getChildNodes().item(0).setTextContent(nombre);
+    }
+    
+    /**
+     * Método para abreviarse el tocho de código y setear las horas de manera sencilla
+     * @param jugador
+     * @param nivel
+     */
+    private void setHoras(int jugador, String horas){
+        jugadores.item(jugador).getChildNodes().item(1).setTextContent(horas);
+    }
+    
+    /**
+     * Método para abreviarse el tocho de código y setear el nivel de manera sencilla
+     * @param jugador
+     * @param nivel
+     */
+    private void setNivel(int jugador, String nivel){
+        jugadores.item(jugador).getChildNodes().item(2).setTextContent(nivel);
+    }
+    
+    /**
+     * Método para abreviarse el tocho de código y setear la puntuacion de manera sencilla
+     * @param jugador
+     * @param puntuacion
+     */
+    private void setPuntuacion(int jugador, String puntuacion){
+        jugadores.item(jugador).getChildNodes().item(3).setTextContent(puntuacion);
+    }
+    
+    /**
+     * Método para abreviarse el tocho de código y setear la nacionalidad de manera sencilla
+     * @param jugador
+     * @param nacionalidad 
+     */
+    private void setNacionalidad(int jugador, String nacionalidad){
+        jugadores.item(jugador).getAttributes().item(0).setTextContent(nacionalidad);
     }
 }
