@@ -5,12 +5,10 @@
  */
 package ad_u4_1_1;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -31,18 +29,18 @@ public class AD_U4_1_1 {
     private final String RUTA = "C:\\Users\\mdfda\\Documents\\NetBeansProjects\\AD_U4_1_1\\src\\ad_u4_1_1\\documento\\";
     private ArrayList<Jugador> listaJugadores;
     private Document documento;
-    private boolean cambios;
     private Scanner sc;
 
     public AD_U4_1_1() {
         int opcion;
-        cambios = false;
+        boolean cambios = false;
         sc = new Scanner(System.in);
         listaJugadores = new ArrayList<Jugador>();
 
         DocumentBuilderFactory factoria = DocumentBuilderFactory.newInstance();
 
         try {
+            //
             punto7();
 
             DocumentBuilder builder = factoria.newDocumentBuilder();
@@ -50,7 +48,7 @@ public class AD_U4_1_1 {
             //A partir del documento xml convertir los nodos en objetos de Jugador y guardarlos en listaJugadores
             rellenarJugadores();
             do {
-                System.out.println("Selecciona opción (número): ");
+                System.out.println("\nSelecciona opción (número): ");
                 System.out.println("1. Obtener estadísticas de los jugadores");
                 System.out.println("2. Cambiar nivel de jugador");
                 System.out.println("3. Sumarle puntuación a jugador");
@@ -75,10 +73,9 @@ public class AD_U4_1_1 {
                         punto6();
                         break;
                     case 0:
-                        System.out.println("BYE, BYE");
+                        System.out.println("\nBYE, BYE");
                         if (cambios) {
                             guardarCambios();
-
                         }
                         break;
                     default:
@@ -87,11 +84,7 @@ public class AD_U4_1_1 {
                 }
             } while (opcion != 0);
 
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(AD_U4_1_1.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SAXException ex) {
-            Logger.getLogger(AD_U4_1_1.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
             Logger.getLogger(AD_U4_1_1.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -110,7 +103,7 @@ public class AD_U4_1_1 {
         int i;
         for (i = 0; i < listaJugadores.size(); i++) {
             System.out.println("************************************");
-            System.out.println("***** CODIGO JUGADOR: " + i + "*****");
+            System.out.println("***** CODIGO JUGADOR: " + i + " *****");
             listarJugador(listaJugadores.get(i));
             System.out.println("************************************");
         }
@@ -126,7 +119,7 @@ public class AD_U4_1_1 {
         jugador = seleccionarJugador();
         //Obtengo el valor antiguo y le sumo uno
         listaJugadores.get(jugador).setNivel(listaJugadores.get(jugador).getNivel() + 1);
-        System.out.println("El jugador " + listaJugadores.get(jugador).getNombre() + " ha subido 1 nivel");
+        System.out.println("El jugador " + listaJugadores.get(jugador).getNombre() + " ha subido 1 nivel\n");
     }
 
     /**
@@ -137,19 +130,19 @@ public class AD_U4_1_1 {
         int jugador, puntuacion = 0;
         //Llamo para listar los jugadores y que elija el que quiera
         jugador = seleccionarJugador();
-        System.out.println("Introduce la puntuación que le quieres sumar al jugador " + listaJugadores.get(jugador));
+        System.out.println("Introduce la puntuación que le quieres sumar al jugador " + listaJugadores.get(jugador).getNombre());
         puntuacion = sc.nextInt();
         
         //Obtengo el valor antiguo y le sumo la puntuación introducida
         listaJugadores.get(jugador).setPuntuacion(listaJugadores.get(jugador).getPuntuacion() + puntuacion);
-        System.out.println("El jugador " + listaJugadores.get(jugador).getNombre() + " ha aumentado su puntuación hasta " + listaJugadores.get(jugador).getPuntuacion());
+        System.out.println("El jugador " + listaJugadores.get(jugador).getNombre() + " ha aumentado su puntuación hasta " + listaJugadores.get(jugador).getPuntuacion() + "\n");
     }
 
     public void punto5() {
         int jugador;
         System.out.println("Selecciona el jugador que quieres eliminiar: ");
         jugador = seleccionarJugador();
-        System.out.println("El siguiente jugador ha sido eliminado: ");
+        System.out.println("\nEl siguiente jugador ha sido eliminado: ");
         listarJugador(listaJugadores.get(jugador));
         listaJugadores.remove(jugador);
     }
@@ -175,11 +168,11 @@ public class AD_U4_1_1 {
                 punto3();
                 break;
             case 3:
-                System.out.println("Introduce las horas que le quieres sumar al jugador " + listaJugadores.get(jugador));
+                System.out.println("Introduce las horas que le quieres sumar al jugador " + listaJugadores.get(jugador).getNombre());
                 horas = sc.nextInt();
                 //Obtengo el valor antiguo y le sumo la puntuación introducida
                 listaJugadores.get(jugador).setHoras(listaJugadores.get(jugador).getHoras() + horas);
-                System.out.println("El jugador " + listaJugadores.get(jugador).getNombre() + " ha aumentado su horas hasta " + listaJugadores.get(jugador).getHoras());
+                System.out.println("El jugador " + listaJugadores.get(jugador).getNombre() + " ha aumentado su horas hasta " + listaJugadores.get(jugador).getHoras() + "\n");
                 break;
         }
     }
@@ -196,7 +189,7 @@ public class AD_U4_1_1 {
                 System.out.println("Introduce el código del archivo xml (a lo bestia y sin errores, ¿eh? que nos conocemos :)");
                 respuesta = sc.nextLine();
                 //Creación a lo bestia de un nuevo xml
-                BufferedWriter bW = new BufferedWriter(new FileWriter("RUTAJugadores.xml"));
+                 BufferedWriter bW = new BufferedWriter(new FileWriter(RUTA + "Jugadores.xml"));
                 bW.write(respuesta);
                 bW.close();
             }
@@ -245,7 +238,7 @@ public class AD_U4_1_1 {
         System.out.println("Nacionalidad: " + jugador.getNacionalidad());
         System.out.println("Puntuación: " + jugador.getPuntuacion());
         System.out.println("Nivel: " + jugador.getNivel());
-        System.out.println("Horas: " + jugador.getHoras());
+        System.out.println("Horas: " + jugador.getHoras() + "\n");
     }
 
     private int seleccionarJugador() {
